@@ -3,6 +3,8 @@
 #include "common/filesystem.h"
 #include "common/value.h"
 #include "common/version.h"
+#include "common/otlog.h"
+
 #include "host/wasi/wasimodule.h"
 #include "host/wasmedge_process/processmodule.h"
 #include "po/argument_parser.h"
@@ -17,6 +19,10 @@ int main(int Argc, const char *Argv[]) {
 
   std::ios::sync_with_stdio(false);
   WasmEdge::Log::setErrorLoggingLevel();
+
+  WasmEdge::Otlog::initTracer();
+  auto span  = WasmEdge::Otlog::get_tracer()->StartSpan("wasmedge-main");
+  auto scope = WasmEdge::Otlog::get_tracer()->WithActiveSpan(span);
 
   PO::Option<std::string> SoName(PO::Description("Wasm or so file"sv),
                                  PO::MetaVar("WASM_OR_SO"sv));
@@ -241,4 +247,5 @@ int main(int Argc, const char *Argv[]) {
       return EXIT_FAILURE;
     }
   }
+   span->End();
 }

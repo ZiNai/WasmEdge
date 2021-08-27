@@ -15,19 +15,30 @@ else()
   wasmedge_setup_target(spdlog)
 endif()
 
+set(OPENTELEMETRY_CPP_DIR "/root/opentelemetry-cpp")
+
+find_package(opentelemetry-cpp CONFIG REQUIRED)
+
+
+
 wasmedge_add_library(wasmedgeCommon
   hexstr.cpp
   log.cpp
   configure.cpp
+  otlog.cpp
 )
 
 target_link_libraries(wasmedgeCommon
   PUBLIC
   spdlog::spdlog
+  PRIVATE
+  ${OPENTELEMETRY_CPP_LIBRARIES}
 )
 
 target_include_directories(wasmedgeCommon
   PUBLIC
   ${PROJECT_BINARY_DIR}/include
   ${PROJECT_SOURCE_DIR}/include
+  PRIVATE
+  ${OPENTELEMETRY_CPP_INCLUDE_DIRS}
 )
